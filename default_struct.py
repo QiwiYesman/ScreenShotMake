@@ -36,10 +36,3 @@ class DefaultStruct:
 
     def __repr__(self):
         return str(self.values)
-
-
-# d = DefaultStruct()
-# d.values = [
-#     str(Path().resolve()), "img", "png", False, True, "mss"
-# ]
-# d.save("defaults.json")
