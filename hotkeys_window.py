@@ -169,6 +169,7 @@ class HotKeyWindow(QWidget):
 
     def create_assigning_window(self, index: int):
         window = AssignHotKey(self, index)
+        window.adjustSize()
         window.closed.connect(self.change_hotkey)
         self.assigning_keys.append(window)
 
