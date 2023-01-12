@@ -39,6 +39,8 @@ class HotKeyWindow(QWidget):
             self.map_choice.addItem(key)
 
     def deploy_current_map(self):
+        if self.map_choice.isEditable():
+            self.map_choice.setEditable(False)
         current_name = self.current_map
         self.deploy_hotkeys(current_name)
         self.reload_map_layout()
@@ -52,9 +54,10 @@ class HotKeyWindow(QWidget):
         if not value:
             new_name = self.current_map
             self.map_choice.setEditable(False)
-            current_name = self.current_map
-            self.keys.map(new_name, self.keys.maps.pop(current_name))
-            self.deploy_map_names()
+            if not self.is_existing_map_name(new_name):
+                current_name = self.current_map
+                self.keys.map(new_name, self.keys.maps.pop(current_name))
+                self.deploy_map_names()
         else:
             self.map_choice.setEditable(True)
 
@@ -108,10 +111,7 @@ class HotKeyWindow(QWidget):
         self.deploy_current_map()
 
     def is_existing_map_name(self, map_name: str):
-        for i in range(self.map_choice.count()):
-            if self.map_choice.itemText(i) == map_name:
-                return True
-        return False
+        return map_name in self.keys.maps
 
     def copy_name(self, map_name: str):
         new_name = map_name + "_copy"
@@ -130,8 +130,10 @@ class HotKeyWindow(QWidget):
 
     def load_ui(self):
         self.setLayout(self.vertical_layout)
+        self.map_choice.setInsertPolicy(QComboBox.InsertPolicy.InsertAlphabetically)
         self.deploy_map_names()
         self.map_choice.currentIndexChanged.connect(self.deploy_current_map)
+
         map_layout = QHBoxLayout()
 
         last_layout = QHBoxLayout()
