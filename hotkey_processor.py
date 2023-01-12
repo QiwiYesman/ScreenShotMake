@@ -1,6 +1,6 @@
 import functools
 from functools import partial
-from typing import List, Callable
+from typing import List, Callable, Any, Dict
 
 import PySide2
 from PySide2.QtCore import Signal, Slot, Qt
@@ -12,6 +12,7 @@ from folder import Folder
 from keyboard_listener import KeyboardListener
 from screen_area import Area
 from screenshots import Screenshot
+from default_struct import DefaultStruct
 
 
 class HotKeyProcessor(QWidget):
@@ -20,28 +21,25 @@ class HotKeyProcessor(QWidget):
     process = Signal(type(print))
 
     def __init__(self, parent, hotkeys: List[HotKey],
-                 folder: Folder,
-                 image_name="img.png",
-                 backend: str = "mss"):
+                 struct: DefaultStruct):
         super().__init__(parent)
         self.listener = KeyboardListener()
         self.hotkeys: List[HotKey] = hotkeys
-        self.screenshot_backend: str = backend
         self.area: Area = Area()
-        self.folder: Folder = folder
-        self.image_name: str = image_name
-        self.paused = False
+        self.folder, \
+            self.image_name, \
+            self.image_ext, \
+            self.paused, \
+            self.after_defining_screen, \
+            self.screenshot_backend = struct.values
         self.defining = False
-        self.after_defining_screen = False
-        self.show()
-
         self.process.connect(self.process_func)
 
         self.deploy_states()
         self.fullscreen()
 
     def path(self):
-        return self.folder.get_unique_fullpath(self.image_name)
+        return Folder(self.folder).get_unique_fullpath(f"{self.image_name}.{self.image_ext}")
 
     def with_state_updating(func: Callable):
         @functools.wraps(func)
@@ -105,7 +103,7 @@ class HotKeyProcessor(QWidget):
 
     def screenshot(self):
         if not self.paused:
-            Screenshot.screenshot_save(self.area.coords, "mss", self.path())
+            Screenshot.screenshot_save(self.area.coords, self.screenshot_backend, self.path())
 
     @with_state_updating
     def change_screen_after_define(self):

@@ -17,7 +17,7 @@ class Folder:
         if Path(folder).is_dir():
             self._folder = Path(folder)
         else:
-            self._folder = ""
+            self._folder = Path()
 
     def _get_full_path(self, file: str) -> Path:
         return self._folder / file

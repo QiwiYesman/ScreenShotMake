@@ -17,7 +17,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(593, 240)
+        Form.resize(593, 236)
         self.verticalLayoutWidget = QWidget(Form)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
         self.verticalLayoutWidget.setGeometry(QRect(10, 20, 563, 191))
@@ -109,8 +109,28 @@ class Ui_Form(object):
 
         self.horizontalLayout_5.addLayout(self.horizontalLayout)
 
-        self.horizontalLayout_5.setStretch(0, 2)
+        self.horizontalLayout_3 = QHBoxLayout()
+        self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
+        self.label_4 = QLabel(self.verticalLayoutWidget)
+        self.label_4.setObjectName(u"label_4")
+
+        self.horizontalLayout_3.addWidget(self.label_4)
+
+        self.backend_input = QComboBox(self.verticalLayoutWidget)
+        self.backend_input.addItem("")
+        self.backend_input.addItem("")
+        self.backend_input.addItem("")
+        self.backend_input.addItem("")
+        self.backend_input.setObjectName(u"backend_input")
+
+        self.horizontalLayout_3.addWidget(self.backend_input)
+
+
+        self.horizontalLayout_5.addLayout(self.horizontalLayout_3)
+
+        self.horizontalLayout_5.setStretch(0, 3)
         self.horizontalLayout_5.setStretch(1, 1)
+        self.horizontalLayout_5.setStretch(2, 1)
 
         self.verticalLayout.addLayout(self.horizontalLayout_5)
 
@@ -131,5 +151,11 @@ class Ui_Form(object):
         self.filename_input.setText(QCoreApplication.translate("Form", u"img", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"Extension", None))
         self.extension_input.setText(QCoreApplication.translate("Form", u"png", None))
+        self.label_4.setText(QCoreApplication.translate("Form", u"Backend", None))
+        self.backend_input.setItemText(0, QCoreApplication.translate("Form", u"mss", None))
+        self.backend_input.setItemText(1, QCoreApplication.translate("Form", u"pil", None))
+        self.backend_input.setItemText(2, QCoreApplication.translate("Form", u"scrot", None))
+        self.backend_input.setItemText(3, QCoreApplication.translate("Form", u"gnome-screenshot", None))
+
     # retranslateUi
 

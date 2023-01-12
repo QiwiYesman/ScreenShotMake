@@ -1,9 +1,10 @@
+from pathlib import Path
 from typing import List
 
 import PySide2
 from PySide2 import QtCore
 from PySide2.QtCore import QDir, Slot, Qt
-from PySide2.QtWidgets import QFileDialog
+from PySide2.QtWidgets import QFileDialog, QGridLayout
 
 from generated_ui import Ui_Form
 from defining_area import DefineAreaWindow, Area, QWidget, QApplication
@@ -13,6 +14,17 @@ import sys
 
 from folder import Folder
 from hotkey_processor import HotKeyProcessor
+from default_struct import DefaultStruct
+
+
+class SettingsWindow(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.load_ui()
+
+    def load_ui(self):
+        main_layout = QGridLayout()
+        self.setLayout(main_layout)
 
 
 class LaunchWindow(QWidget):
@@ -21,31 +33,41 @@ class LaunchWindow(QWidget):
         self.ui = Ui_Form()
         self.ui.setupUi(self)
         self.set_connections()
-        self.default_path()
+        self.defaults = DefaultStruct.from_file("defaults.json")
+        self.load_default_value(self.defaults)
         self.keys = KeyMapper.from_file("keys.json")
         self.screenshot_area = Area()
         self.win: DefineAreaWindow = None
         self.hotkey_win: HotKeyWindow = None
         self.processor: HotKeyProcessor = None
 
+    def load_default_value(self, struct: DefaultStruct):
+        self.ui.path_input.setText(struct.default_path)
+        self.ui.filename_input.setText(struct.default_image_name)
+        self.ui.extension_input.setText(struct.default_image_ext)
+        self.ui.backend_input.setCurrentText(struct.default_backend)
+
+    def get_struct(self):
+        return DefaultStruct(
+            default_path=self.ui.path_input.text(),
+            default_backend=self.ui.backend_input.currentText(),
+            default_image_name=self.ui.filename_input.text(),
+            default_image_ext=self.ui.extension_input.text(),
+            default_is_paused=self.defaults.default_is_paused,
+            default_after_screen_defining=self.defaults.default_after_screen_defining
+        )
+
     def set_connections(self):
         self.ui.launch_button.clicked.connect(self.launch_button_click)
         self.ui.hotkey_button.clicked.connect(self.hotkey_button_click)
         self.ui.browse_button.clicked.connect(self.browse_button_click)
 
-    @property
-    def folder(self):
-        return Folder(self.ui.path_input.text())
-
-    @property
-    def file_name(self):
-        return self.ui.filename_input.text() + "." + self.ui.extension_input.text()
-
     def launch_button_click(self):
-        self.processor = HotKeyProcessor(None,
+        self.processor = HotKeyProcessor(self,
                                          self.keys.active_keys(),
-                                         self.folder,
-                                         self.file_name)
+                                         self.get_struct())
+        self.processor.setWindowFlags(self.processor.windowFlags() | Qt.WindowModal)
+        self.processor.show()
         self.ui.launch_button.setEnabled(False)
         self.processor.closed.connect(self.unblock_launch)
         self.processor.start()
@@ -54,10 +76,6 @@ class LaunchWindow(QWidget):
         path = QFileDialog.getExistingDirectory()
         if path:
             self.ui.path_input.setText(path)
-
-    def default_path(self):
-        folder = Folder(QDir.currentPath()).create("img")
-        self.ui.path_input.setText(str(folder.folder))
 
     @Slot()
     def unblock_launch(self):

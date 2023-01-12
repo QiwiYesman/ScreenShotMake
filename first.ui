@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>240</height>
+    <height>236</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <height>191</height>
     </rect>
    </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0">
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_4">
       <item>
@@ -111,7 +111,7 @@
      </layout>
     </item>
     <item>
-     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="2,1">
+     <layout class="QHBoxLayout" name="horizontalLayout_5" stretch="3,1,1">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
@@ -178,6 +178,41 @@
           <property name="text">
            <string>png</string>
           </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Backend</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="backend_input">
+          <item>
+           <property name="text">
+            <string>mss</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>pil</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>scrot</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>gnome-screenshot</string>
+           </property>
+          </item>
          </widget>
         </item>
        </layout>
