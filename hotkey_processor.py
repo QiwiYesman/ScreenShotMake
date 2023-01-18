@@ -1,5 +1,4 @@
 import functools
-import sys
 from functools import partial
 from typing import List, Callable
 
@@ -17,8 +16,6 @@ from keyboard_listener import KeyboardListener
 from screen_area import Area
 from screenshots import Screenshot
 from default_struct import DefaultStruct
-import win32gui, win32process
-from ctypes import windll
 
 pyautogui.PAUSE = float(0)
 
@@ -35,14 +32,13 @@ class HotKeyProcessor(QWidget):
         self.hotkeys: List[HotKey] = hotkeys
         self.area: Area = Area()
         self.folder, self.image_name, self.image_ext, \
-        self.paused, self.after_defining_screen, self.screenshot_backend, \
-        self.define_method = struct.values
+            self.paused, self.after_defining_screen, self.screenshot_backend, \
+            self.define_method = struct.values
         self.defining = False
         self.process.connect(self.process_func)
         self.defining_window = None
         self.deploy_states()
         self.fullscreen()
-        self.hwnd = 0
         self.clipboard = QApplication.clipboard()
         self.clipboard_pause = True
         self.clipboard.dataChanged.connect(self.printscreen_screenshot)
@@ -145,33 +141,15 @@ class HotKeyProcessor(QWidget):
     def pause(self):
         self.paused = not self.paused
 
-    def pause_current_process(self):
-        self.hwnd = win32gui.GetForegroundWindow()
-        tid, pid = win32process.GetWindowThreadProcessId(self.hwnd)
-        dp = windll.kernel32.DebugActiveProcess
-        dp(pid)
-
-    def resume_paused_process(self):
-        tid, pid = win32process.GetWindowThreadProcessId(self.hwnd)
-        dp = windll.kernel32.DebugActiveProcessStop
-        dp(pid)
-
     def change_area(self):
         if not self.paused:
             self.paused = True
-            self.pause_current_process()
 
             self.defining_window = DefineAreaWindow(None, self.define_method)
             self.defining_window.setWindowFlags(self.defining_window.windowFlags() | Qt.WindowStaysOnTopHint)
             self.defining_window.activateWindow()
             self.defining_window.show()
             self.defining_window.closed.connect(self.set_area)
-            if sys.platform == "win32":
-                import win32com.client
-                hwnd = win32gui.FindWindowEx(0, 0, 0, "python")
-                shell = win32com.client.Dispatch("WScript.Shell")
-                shell.SendKeys('%')
-                win32gui.SetForegroundWindow(hwnd)
 
     @with_state_updating
     def fullscreen(self):
@@ -197,5 +175,3 @@ class HotKeyProcessor(QWidget):
         self.paused = False
         if self.after_defining_screen:
             self.screenshot()
-
-        self.resume_paused_process()

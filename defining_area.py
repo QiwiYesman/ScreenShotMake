@@ -62,7 +62,8 @@ class DefineAreaWindow(TransparentWindow):
         painter.fillRect(self.rect(), QColor(255, 255, 255, 150))
         if self.is_defining or self.to_finish:
             geometry = self.get_rect_area()
-            painter.setBrush(QBrush(QColor(0, 255, 0, 70), Qt.SolidPattern))
+            painter.setCompositionMode(QPainter.CompositionMode_Source)
+            painter.setBrush(QBrush(QColor(255, 255, 255, 0), Qt.SolidPattern))
             painter.drawRect(*geometry)
 
     def created(self):
